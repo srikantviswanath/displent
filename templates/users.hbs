@@ -1,0 +1,13 @@
+<div class="container">
+	<div class="col-md-8">
+		<div class="list-group">
+			{{#each user in controller}}
+				<div class="list-group-item">{{#link-to 'user' user}}{{user.firstName}} {{user.lastName}}{{/link-to}}</div>
+			{{/each}}
+		</div>
+		<button class="btn btn-primary">YoLo</button>
+	</div>
+	<div class="col-md-4">
+		{{outlet}}
+	</div>
+</div>

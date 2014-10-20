@@ -1,0 +1,13 @@
+<div class="container">
+	<div class="col-md-4">
+		<div class="list-group">
+			{{#each prof in controller}}
+				<div class="list-group-item"> {{#link-to 'profile' prof}}{{prof.firstName}} {{prof.lastName}}{{/link-to}} - {{prof.memberSince}} </div>
+			{{/each}}
+		</div>
+		<button class="btn btn-primary">YoLo</button>
+	</div>
+	<div class="col-md-4">
+		{{outlet}}
+	</div>
+</div>
