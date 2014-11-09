@@ -1,0 +1,9 @@
+<div>
+	{{tags}}
+	<img class="img-rounded" height="700px" width="1000px" {{bind-attr src=path}}/> <br />
+	{{title}} <div style="float:right">{{location}}</div> <br/>
+	Shot on: {{dateTaken}} <div style="float:right">Focal length: {{focalLength}}</div> <br/>
+	By {{#link-to 'profile' owner.id}}{{owner.firstName}} {{owner.lastName}}{{/link-to}} <br />
+	Owner membership: {{owner.membership}}
+
+</div>

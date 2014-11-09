@@ -1,0 +1,9 @@
+<div class="container">
+	{{#each photoTmbnail in controller}}
+		<div class="col-md-4">
+			{{#link-to 'photo' photoTmbnail.id}}<img class="img-circle" height="220px" width="250px" {{bind-attr src=photoTmbnail.path}}/>{{/link-to}} <br />
+			{{photoTmbnail.title}}<br />
+			By: {{#link-to 'profile' photoTmbnail.owner.id}}{{photoTmbnail.owner.firstName}}{{/link-to}}<br />
+		</div>
+	{{/each}}
+</div>

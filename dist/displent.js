@@ -6,88 +6,220 @@ Displent.Router.map(function(){
 		});
 	});
 
-	this.resource('profiles', function(){
-		this.resource('profile', {path: '/:profile_id'}, function(){
+	//this.resource('profiles', function(){});
+
+	this.resource('profile', {path: '/profiles/:profile_id'}, function(){});
+
+
+
+	this.resource('photoThumbnails', function(){
+		this.resource('photoThumbnail', {path: 'photoThumbnails/:photoThumbnail_id'}, function(){
 
 		});
 	});
+
+	//this.resource('photos', function(){});
+	this.resource('photo', {path: '/photos/:photo_id'}, function(){});
+
+		
+	
 });
+
+
+/*
+1.Add a profile id to user model in django
+2.Add a photo id to photoThumbnail in
+*/
 Displent.ApplicationAdapter = DS.RESTAdapter.extend({
 	host: 'http://localhost:3223/api'
 });
 
 
-Displent.GistUsersAdapter = DS.RESTAdapter.extend({
-	namespace: '/api/fullUsersadadf'
-});
+
 
 //Displent.ApplicationAdapter = DS.FixtureAdapter;
+Displent.Photo = DS.Model.extend({
+	path: DS.attr('string'),
+	title: DS.attr('string'),
+	owner: DS.belongsTo('user', {async:true}),
+	location: DS.attr('string'),
+	dateTaken: DS.attr('date'),
+	focalLength: DS.attr('number'),
+	tags: DS.attr('string')
+
+});
+
+
+Displent.PhotoSerializer = DS.RESTSerializer.extend(DS.EmbeddedRecordsMixin,{
+	attrs:{
+		owner: {embedded: 'load'}
+	},
+
+	normalizePayload: function(payload){
+		Ember.keys(payload).forEach(function(key){
+			var newKey = Ember.String.camelize(key);
+			if (newKey !== key) {
+			  payload[newKey] = payload[key];
+			  delete payload[key];
+			}
+		});
+		var result = {photo: payload};
+		return result;
+	}
+});
+Displent.PhotoThumbnail = DS.Model.extend({
+	path: DS.attr('string'),
+	title: DS.attr('string'),
+	owner: DS.belongsTo('user', {async: true}),
+
+});
+
+Displent.PhotoThumbnailSerializer = DS.RESTSerializer.extend(DS.EmbeddedRecordsMixin,{
+	attrs:{
+		owner: {embedded: 'always'}
+	},
+
+	normalizePayload: function(payload){
+		if(Array.isArray(payload)){
+			for(var photoIndex in payload){
+				var photo = payload[photoIndex];
+				if(typeof(photo) === 'object'){
+					Ember.keys(photo).forEach(function(photoKey){
+						if(photoKey=='owner'){
+							var owner = photo[photoKey];
+							Ember.keys(owner).forEach(function(ownerKey){
+								var camelKey = Ember.String.camelize(ownerKey);
+								if(camelKey != ownerKey){
+									owner[camelKey] = owner[ownerKey];
+									delete owner[ownerKey];
+								}
+							});
+						}
+						var newKey = Ember.String.camelize(photoKey);
+						if(newKey != photoKey){
+							photo[newKey] = photo[photoKey];
+							delete photo[photoKey];
+						}
+					});
+				}
+				
+			}
+			var result = {photoThumbnail: payload};
+			return result;
+		}
+	}
+});
 Displent.Profile = DS.Model.extend({
 	firstName: DS.attr(),
 	lastName: DS.attr(),
 	profilePic: DS.attr(),
 	membership: DS.attr(),
 	memberSince: DS.attr(),
-	themePic: DS.attr()
+	themePic: DS.attr(),
+	photo: DS.hasMany('photo', {async:true})
 });
 
+//Displent.ProfileAdapter = DS.FixtureAdapter;
+
+
 Displent.ProfileSerializer = DS.RESTSerializer.extend({
+	attrs:{
+		photo: {embedded: 'load'}
+	},
+	
+	serializeIntoHash: function(data, type, record, options) {
+	    var payload = this.serialize(record, options);
+	    Ember.keys(payload).forEach(function(key){
+        	var newKey = Ember.String.underscore(key);
+        	if(newKey!=key){
+        		payload[newKey] = payload[key];
+        		delete payload[key];
+        	}
+        });
+	    console.log(payload);
+	    Ember.merge(data, payload);
+	},
+
 	normalizePayload: function(payload){
-		console.log("paylod");
-		console.log(payload);
-		var idPayload = payload.map(function(profile){
-				return {
-				id: profile.id,
-				firstName: profile.first_name,
-				lastName: profile.last_name,
-				profilePic: profile.profile_pic,
-				membership: profile.membership,
-				memberSince: profile.member_since,
-				themePic: profile.theme_pic
-			};
+		Ember.keys(payload).forEach(function(key){
+			
+			var newKey = Ember.String.camelize(key);
+			if (newKey !== key) {
+			  payload[newKey] = payload[key];
+			  delete payload[key];
+			}
 		});
-		//console.log('Hello');
-		//console.log(idPayload);
-		var result = {profile: idPayload};
+		var result = {profile: payload};
 		return result;
 	}
+
 });
 Displent.User = DS.Model.extend({
 	firstName: DS.attr(),
 	lastName: DS.attr(),
 	profilePic: DS.attr(),
-	membership: DS.attr()
+	membership: DS.attr(),
+	
 });
 
 Displent.UserSerializer = DS.RESTSerializer.extend({
 	normalizePayload: function(payload){
-		var idPayload = payload.map(function(user){
-			return {
-				id: user.id,
-				firstName: user.first_name,
-				lastName: user.last_name,
-				profilePic: user.profile_pic,
-				membership: user.membership
-			};
-		});
-		var result = {user: idPayload};
-		return result;
+		if(Array.isArray(payload)){
+			for(var userIndex in payload){
+				var user = payload[userIndex];
+				if(typeof(user) === 'object'){
+					Ember.keys(user).forEach(function(userKey){
+					var newKey = Ember.String.camelize(userKey);
+					if(newKey != userKey){
+						user[newKey] = user[userKey];
+						delete user[userKey];
+					}
+					});
+				}
+				
+			}
+			var result = {user: payload};
+			return result;
+		}
+		else{
+			Ember.keys(payload).forEach(function(key){
+				var newKey = Ember.String.camelize(key);
+				if(newKey != key){
+					payload[newKey] = payload[key];
+					delete payload[key];
+				}
+			});
+			var result = {user: payload};
+			return result;
+		}
 	}
-})
+});
+Displent.PhotoRoute = Ember.Route.extend({
+	model: function(params){
+		var photo = this.store.find('photo', params.photo_id);
+		console.log(photo);
+		/*if(params.owner.firstName=="Dave"){
+			console.log("Dave found");
+		}*/
+		return photo
+
+	}
+});
+Displent.PhotoThumbnailsRoute = Ember.Route.extend({
+	model: function(){
+		return this.store.find('photoThumbnail');
+	}
+});
 Displent.ProfileRoute = Ember.Route.extend({
 	model: function(params){
 		console.log("params:");
 		console.log(params);
 		return this.store.find('profile', params.profile_id);
 	}
+
 });
 
 
-Displent.ProfilesRoute = Ember.Route.extend({
-	model: function(){
-		return this.store.find('profile')
-	}
-});
 Displent.UserRoute = Ember.Route.extend({
 	afterModel: function(params){
 	    this.transitionTo('profile', params.id);
@@ -95,11 +227,20 @@ Displent.UserRoute = Ember.Route.extend({
 		
 });
 
+
+
 Displent.UsersRoute = Ember.Route.extend({
 	model: function(){
 		return this.store.find('user');
 	}
 })
+Displent.PhotoController = Ember.ObjectController.extend({
+	test: function(){
+		var tags = this.get("model.tags");
+		console.log("tags:")
+		console.log(tags);
+	}
+});
 /*Displent.ProfileController = Ember.ObjectController.extend({
 	modelCheck: function(){
 		console.log('Checking model');
@@ -108,3 +249,21 @@ Displent.UsersRoute = Ember.Route.extend({
 	}
 	
 });*/
+Displent.UsersController = Ember.ArrayController.extend({
+	actions:{
+		addPitre:function(){
+			var pitre = this.store.createRecord('profile',{
+				
+					firstName: "Pitre",
+					lastName: "Goud",
+					profilePic: "ppics/4",
+					membership: "Silver",
+					themePic: "tpics/4",
+				
+				
+			});
+			pitre.save();
+			console.log('adding Pitre');
+		}
+	}
+});

@@ -1,13 +1,8 @@
 <div class="container">
-	<div class="col-md-8">
-		<div class="list-group">
-			{{#each user in controller}}
-				<div class="list-group-item">{{#link-to 'user' user}}{{user.firstName}} {{user.lastName}}{{/link-to}}</div>
-			{{/each}}
+	{{#each user in controller}}
+		<div class="col-md-4">
+			{{#link-to 'profile' user.id}}{{user.firstName}} {{user.lastName}}{{/link-to}} <br />
 		</div>
-		<button class="btn btn-primary">YoLo</button>
-	</div>
-	<div class="col-md-4">
-		{{outlet}}
-	</div>
+	{{/each}}
+		<button class="btn btn-success" style="margin-top: 100px"{{action "addPitre"}}>Add Static User</button>
 </div>

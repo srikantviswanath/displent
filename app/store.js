@@ -3,8 +3,6 @@ Displent.ApplicationAdapter = DS.RESTAdapter.extend({
 });
 
 
-Displent.GistUsersAdapter = DS.RESTAdapter.extend({
-	namespace: '/api/fullUsersadadf'
-});
+
 
 //Displent.ApplicationAdapter = DS.FixtureAdapter;

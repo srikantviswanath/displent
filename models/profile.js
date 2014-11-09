@@ -4,27 +4,42 @@ Displent.Profile = DS.Model.extend({
 	profilePic: DS.attr(),
 	membership: DS.attr(),
 	memberSince: DS.attr(),
-	themePic: DS.attr()
+	themePic: DS.attr(),
+	photo: DS.hasMany('photo', {async:true})
 });
 
+//Displent.ProfileAdapter = DS.FixtureAdapter;
+
+
 Displent.ProfileSerializer = DS.RESTSerializer.extend({
+	attrs:{
+		photo: {embedded: 'load'}
+	},
+	
+	serializeIntoHash: function(data, type, record, options) {
+	    var payload = this.serialize(record, options);
+	    Ember.keys(payload).forEach(function(key){
+        	var newKey = Ember.String.underscore(key);
+        	if(newKey!=key){
+        		payload[newKey] = payload[key];
+        		delete payload[key];
+        	}
+        });
+	    console.log(payload);
+	    Ember.merge(data, payload);
+	},
+
 	normalizePayload: function(payload){
-		console.log("paylod");
-		console.log(payload);
-		var idPayload = payload.map(function(profile){
-				return {
-				id: profile.id,
-				firstName: profile.first_name,
-				lastName: profile.last_name,
-				profilePic: profile.profile_pic,
-				membership: profile.membership,
-				memberSince: profile.member_since,
-				themePic: profile.theme_pic
-			};
+		Ember.keys(payload).forEach(function(key){
+			
+			var newKey = Ember.String.camelize(key);
+			if (newKey !== key) {
+			  payload[newKey] = payload[key];
+			  delete payload[key];
+			}
 		});
-		//console.log('Hello');
-		//console.log(idPayload);
-		var result = {profile: idPayload};
+		var result = {profile: payload};
 		return result;
 	}
+
 });
