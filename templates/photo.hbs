@@ -1,5 +1,7 @@
 <div>
-	{{tags}}
+	{{#each tag in tags}}
+		<div class="badge">{{#link-to 'search' (query-params tags='hello')}}{{tag}}{{/link-to}}</div>
+	{{/each}}
 	<img class="img-rounded" height="700px" width="1000px" {{bind-attr src=path}}/> <br />
 	{{title}} <div style="float:right">{{location}}</div> <br/>
 	Shot on: {{dateTaken}} <div style="float:right">Focal length: {{focalLength}}</div> <br/>

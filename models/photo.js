@@ -5,7 +5,7 @@ Displent.Photo = DS.Model.extend({
 	location: DS.attr('string'),
 	dateTaken: DS.attr('date'),
 	focalLength: DS.attr('number'),
-	tags: DS.attr('string')
+	tags: DS.attr()
 
 });
 

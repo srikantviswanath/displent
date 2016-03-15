@@ -19,7 +19,7 @@ Displent.Router.map(function(){
 
 	//this.resource('photos', function(){});
 	this.resource('photo', {path: '/photos/:photo_id'}, function(){});
-
+	this.resource('search');
 		
 	
 });

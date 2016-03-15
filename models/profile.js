@@ -30,6 +30,8 @@ Displent.ProfileSerializer = DS.RESTSerializer.extend({
 	},
 
 	normalizePayload: function(payload){
+		console.log("profile payload:");
+		console.log(payload);
 		Ember.keys(payload).forEach(function(key){
 			
 			var newKey = Ember.String.camelize(key);
@@ -39,6 +41,8 @@ Displent.ProfileSerializer = DS.RESTSerializer.extend({
 			}
 		});
 		var result = {profile: payload};
+		console.log("result");
+		console.log(result);
 		return result;
 	}
 

@@ -3,5 +3,9 @@
 	Theme Pic: {{themePic}} <br />
 	Member Since: {{memberSince}} <br />
 	First Name: {{firstName}} <br />
-	Last Name: {{lastName}}
+	Last Name: {{lastName}} <br />
+	Photos
+	{{#each photo in controller.photos}}
+		{{photo.title}}
+	{{/each}}
 </div>

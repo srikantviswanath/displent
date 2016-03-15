@@ -20,7 +20,7 @@ Displent.Router.map(function(){
 
 	//this.resource('photos', function(){});
 	this.resource('photo', {path: '/photos/:photo_id'}, function(){});
-
+	this.resource('search');
 		
 	
 });
@@ -45,7 +45,7 @@ Displent.Photo = DS.Model.extend({
 	location: DS.attr('string'),
 	dateTaken: DS.attr('date'),
 	focalLength: DS.attr('number'),
-	tags: DS.attr('string')
+	tags: DS.attr()
 
 });
 
@@ -141,6 +141,8 @@ Displent.ProfileSerializer = DS.RESTSerializer.extend({
 	},
 
 	normalizePayload: function(payload){
+		console.log("profile payload:");
+		console.log(payload);
 		Ember.keys(payload).forEach(function(key){
 			
 			var newKey = Ember.String.camelize(key);
@@ -150,6 +152,8 @@ Displent.ProfileSerializer = DS.RESTSerializer.extend({
 			}
 		});
 		var result = {profile: payload};
+		console.log("result");
+		console.log(result);
 		return result;
 	}
 
@@ -214,11 +218,19 @@ Displent.ProfileRoute = Ember.Route.extend({
 	model: function(params){
 		console.log("params:");
 		console.log(params);
+		console.log(this.store.find('profile', params.profile_id));
 		return this.store.find('profile', params.profile_id);
 	}
 
 });
 
+
+Displent.SearchRoute = Ember.Route.extend({
+	model: function(params){
+		console.log("search query");
+		console.log(params);
+	}
+});
 
 Displent.UserRoute = Ember.Route.extend({
 	afterModel: function(params){
@@ -235,11 +247,7 @@ Displent.UsersRoute = Ember.Route.extend({
 	}
 })
 Displent.PhotoController = Ember.ObjectController.extend({
-	test: function(){
-		var tags = this.get("model.tags");
-		console.log("tags:")
-		console.log(tags);
-	}
+	defaultTag: null
 });
 /*Displent.ProfileController = Ember.ObjectController.extend({
 	modelCheck: function(){
